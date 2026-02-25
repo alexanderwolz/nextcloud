@@ -1,0 +1,70 @@
+services:
+  database:
+    container_name: nextcloud_database
+    hostname: nextcloud_database
+    image: postgres:18.2-trixie
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - database:/var/lib/postgresql
+    networks:
+      - database
+
+  nextcloud:
+    build: ./build
+    container_name: nextcloud
+    hostname: nextcloud
+    restart: unless-stopped
+    environment:
+      APACHE_DISABLE_REWRITE_IP: "1"
+      DEFAULT_APPS: sociallogin
+      OVERWRITEHOST: localhost
+      TRUSTED_PROXIES: localhost
+      OVERWRITEPROTOCOL: http
+      POSTGRES_HOST: database
+      POSTGRES_DB: database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: admin
+      NC_default_phone_region: DE
+      NC_social_login_auto_redirect: "false"
+      SMTP_SECURE: ""
+      SMTP_AUTHTYPE: PLAIN
+      SMTP_HOST: mailserver
+      SMTP_PORT: "25"
+      MAIL_FROM_ADDRESS: noreply
+      MAIL_DOMAIN: mail.example.com
+      KEYCLOAK_CLIENT_ID: client
+      KEYCLOAK_CLIENT_SECRET: secret
+      KEYCLOAK_AUTH_URL: https://sso.example.com/realms/master/protocol/openid-connect/auth
+      KEYCLOAK_TOKEN_URL: https://sso.example.com/realms/master/protocol/openid-connect/token
+      KEYCLOAK_USER_URL: https://sso.example.com/realms/master/protocol/openid-connect/userinfo
+      KEYCLOAK_LOGOUT_URL: https://sso.example.com/realms/master/protocol/openid-connect/logout
+    ports:
+      - "8080:80"
+    volumes:
+      - html:/var/www/html
+      - data:/var/www/html/data
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - database
+
+volumes:
+  database:
+  html:
+  data:
+
+networks:
+  database:
+    internal: true
