@@ -1,4 +1,4 @@
-FROM nextcloud:32.0.6-apache
+FROM nextcloud:32.0.12-apache
 
 RUN mkdir /entrypoint.d \
     && sed -i 's/exec "$@"//g' /entrypoint.sh \
