@@ -11,7 +11,7 @@ This repository holds a Dockerfile to provide a customized version of the Nextcl
 
 
 ## 🐳 Docker Hub
-```docker pull alexanderwolz/nextcloud:32.0.12```
+```docker pull alexanderwolz/nextcloud:35.0.2```
 
 
 - - -
