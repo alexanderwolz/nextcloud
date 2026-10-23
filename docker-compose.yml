@@ -59,6 +59,7 @@ services:
         condition: service_healthy
     networks:
       - database
+      - frontend
 
 volumes:
   database:
@@ -68,3 +69,4 @@ volumes:
 networks:
   database:
     internal: true
+  frontend:
